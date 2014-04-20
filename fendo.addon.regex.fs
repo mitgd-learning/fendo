@@ -1,9 +1,8 @@
-.( fendo.addon.pages_by_regex.fs) cr
+.( fendo.addon.regex.fs) cr
 
 \ This file is part of Fendo.
 
-\ This file provides a word that counts all pages whose pid matches a
-\ regex.
+\ This file provides two words to compile a temporary regex.
 
 \ Copyright (C) 2013,2014 Marcos Cruz (programandala.net)
 
@@ -26,47 +25,37 @@
 \ **************************************************************
 \ Change history of this file
 
-\ 2014-03-09: Written, after <fendo.addon.pages_by_prefix.fs>.
+\ 2013-11-26: Start.
+\ 2014-03-02: Simplified. Renamed. Generalized.
 
 \ **************************************************************
 \ Requirements
 
 forth_definitions
 
+\ From Forth Foundation Library
+require ffl/rgx.fs  \ regular expressions
+
+\ From Galope
 require galope/module.fs  \ 'module:', ';module', 'hide', 'export'
-require galope/rgx-wcmatch-question.fs  \ 'rgx-wcmatch?'
 
 fendo_definitions
 
-require ./fendo.addon.traverse_pids.fs
-require ./fendo.addon.regex.fs
-
 \ **************************************************************
 
-module: fendo.addon.pages_by_regex
+module: fendo.addon.regex
 
-variable pages
-: ((pages_by_regex))  { D: pid -- }
-  \ Increase the number of pages whose pid matches the current regex.
-  pid regex rgx-wcmatch? 0= ?exit
-  pid pid$>data>pid# draft? ?exit  1 pages +!
-  ;
-: (pages_by_regex)  ( ca len -- f )
-  \ Increase the number of pages whose pid matches the current regex.
-  \ ca len = pid
-  \ f = continue with the next element?
-  ((pages_by_regex)) true
+: regex_error  ( ca len n -- )
+  ." Bad regular expression at position " . ." :" cr type abort
   ;
 
 export
 
-: pages_by_regex  ( ca len -- n )
-  \ Number of pages whose pid starts with the given prefix.
-  >regex pages off   ['] (pages_by_regex) traverse_pids  pages @
+rgx-create regex
+: >regex  ( ca len -- )
+  2dup regex rgx-compile if  2drop  else  regex_error  then
   ;
 
 ;module
 
-.( fendo.addon.pages_by_regex.fs compiled) cr
-
-
+.( fendo.addon.regex.fs compiled) cr

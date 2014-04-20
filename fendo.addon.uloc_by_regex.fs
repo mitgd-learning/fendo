@@ -1,10 +1,10 @@
-.( fendo.addon.latin1_source_code.fs) cr
+.( fendo.addon.uloc_by_regex.fs) cr
 
 \ This file is part of Fendo.
 
-\ This file is the latin1 source code addon.
+\ This file is the addon that creates unnumbered content lists.
 
-\ Copyright (C) 2013 Marcos Cruz (programandala.net)
+\ Copyright (C) 2013,2014 Marcos Cruz (programandala.net)
 
 \ Fendo is free software; you can redistribute it and/or modify it
 \ under the terms of the GNU General Public License as published by
@@ -25,33 +25,19 @@
 \ **************************************************************
 \ Change history of this file
 
-\ 2013-12-13: Written.
-\ 2014-02-15: Fix: path of the Fendo addons is converted to relative.
+\ 2013-11-26 Start.
+\ 2014-03-02: Renamed and modified after the other related addons.
 
 \ **************************************************************
-\ Requirements
 
 forth_definitions
-
-require galope/uncodepaged.fs
-
+require ./fendo.addon.lioc_by_regex.fs
 fendo_definitions
 
-require ./fendo.addon.source_code.fs
-require ./fendo.addon.latin1_charset.fs
-
-\ **************************************************************
-\ Source code in latin1 character encoding
-
-: latin1_source_code_translated  ( ca len -- ca' len' )
-  \ Convert the content of a latin1 file to UTF-8.
-  latin1_charset_to_utf8 uncodepaged
-  ;
-: latin1_source_code  ( ca len -- )
-  \ Read the content of a latin1 file and echo it.
-  \ ca len = file name
-  ['] latin1_source_code_translated is source_code_pretranslated
-  source_code
+: uloc_by_regex  ( ca len -- )
+  \ Create an unnumbered list of content
+  \ with pages whose pid matches the given prefix.
+  [<ul>] lioc_by_regex [</ul>]
   ;
 
-.( fendo.addon.latin1_source_code.fs compiled) cr
+.( fendo.addon.uloc_by_regex.fs compiled) cr
